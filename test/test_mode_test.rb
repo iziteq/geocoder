@@ -24,6 +24,13 @@ class TestModeTest < Test::Unit::TestCase
     end
   end
 
+  def test_search_with_known_stub_and_city_method
+    Geocoder::Lookup::Test.add_stub("New York, NY", [mock_attributes])
+    result = Geocoder.search("New York, NY").first
+
+    assert_equal result.city, 'New York'
+  end
+
   def test_search_with_unknown_stub_without_default
     assert_raise ArgumentError do
       Geocoder.search("New York, NY")
@@ -46,14 +53,25 @@ class TestModeTest < Test::Unit::TestCase
   def mock_attributes
     coordinates = [40.7143528, -74.0059731]
     @mock_attributes ||= {
-      'coordinates'  => coordinates,
-      'latitude'     => coordinates[0],
-      'longitude'    => coordinates[1],
-      'address'      => 'New York, NY, USA',
-      'state'        => 'New York',
-      'state_code'   => 'NY',
-      'country'      => 'United States',
-      'country_code' => 'US',
+      'coordinates'        => coordinates,
+      'latitude'           => coordinates[0],
+      'longitude'          => coordinates[1],
+      'address'            => 'New York, NY, USA',
+      'state'              => 'New York',
+      'state_code'         => 'NY',
+      'country'            => 'United States',
+      'country_code'       => 'US',
+      'address_components' => [
+        {'long_name' => 'New York',
+         'short_name' => 'New York',
+         'types' => ['locality', 'political']},
+        {'long_name' => 'New York',
+         'short_name' => 'NY',
+         'types' => ['administrative_area_level_1', 'political']},
+        {'long_name' => 'United States',
+         'short_name' => 'US',
+         'types' => ['country', 'political']}
+      ]
     }
   end
 end
